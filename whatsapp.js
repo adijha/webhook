@@ -105,4 +105,4 @@
 // }
 // let fn = getDigit(7821915962, 1, 'fromLeft');
 
-//just to build
+//just to build again and again
