@@ -1172,30 +1172,70 @@ const sndSms = (phone, message, senderID, shop) => {
 			if (!err) {
 				let smsapi = process.env.SMS_API;
 				let LeftSMS = data.smsCount - data.sms.length;
+
+
+/////////////////
+
+
+// var options = { method: 'GET',
+//   url: 'https://global.datagenit.com/API/sms-api.php',
+//   qs: 
+//    { auth: smsapi,
+//      senderid: 'DATAGN',
+//      msisdn: phone,
+//      message: 'Hello' },
+//   headers: 
+//    {'cache-control': 'no-cache' } };
+
+// request(options, function (error, response, body) {
+//   if (error) throw new Error(error);
+
+//   console.log(body,'---->--->----->----->---->------->------>------->');
+// });
+
+/////////////////
+
 				if (LeftSMS > 0) {
 					//send SMS
-					var options = {
-						method: 'GET',
-						hostname: 'api.msg91.com',
-						port: null,
-						path: `/api/sendhttp.php?mobiles=${phone}&authkey=${smsapi}&route=4&sender=${senderID}&message=${message}&country=91`,
-						headers: {}
-					};
-					try {
-						var req = http.request(options, function(res) {
-							var chunks = [];
-							res.on('data', function(chunk) {
-								chunks.push(chunk);
-							});
-							res.on('end', function() {
-								var body = Buffer.concat(chunks);
-								console.log(body.toString());
-							});
-						});
-					} catch (error) {
-						console.error("sms couldn't send because of:", error);
-					}
+					// var options = {
+					// 	method: 'GET',
+					// 	hostname: 'api.msg91.com',
+					// 	port: null,
+					// 	path: `/api/sendhttp.php?mobiles=${phone}&authkey=${smsapi}&route=4&sender=${senderID}&message=${message}&country=91`,
+					// 	headers: {}
+					// };
+					// try {
+					// 	var req = http.request(options, function(res) {
+					// 		var chunks = [];
+					// 		res.on('data', function(chunk) {
+					// 			chunks.push(chunk);
+					// 		});
+					// 		res.on('end', function() {
+					// 			var body = Buffer.concat(chunks);
+					// 			console.log(body.toString());
+					// 		});
+					// 	});
+					// } catch (error) {
+					// 	console.error("sms couldn't send because of:", error);
+					// }
 					//save sms data to DB
+
+					var options = { method: 'GET',
+					url: 'https://global.datagenit.com/API/sms-api.php',
+					qs: 
+					 { auth: smsapi,
+						 senderid: 'DATAGN',
+						 msisdn: phone,
+						 message: 'Hello' },
+					headers: 
+					 {'cache-control': 'no-cache' } };
+				
+				request(options, function (error, response, body) {
+					if (error) throw new Error(error);
+				
+					console.log(body,'---->--->----->----->---->------->------>------->');
+				});
+
 					var obj = {
 						description: message.replace(/%20/g, ' ').replace(/%0A/g, ' '),
 						term: phone
