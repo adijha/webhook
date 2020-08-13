@@ -1168,6 +1168,7 @@ const sndSms = async (phone, message, senderID, shop) => {
 	} else {
 		console.log(" can't send sms because, phone number is < 10 digits i.e : ", phone);
 	}
+	
 	Store.findOne(
 		{
 			name: shop
