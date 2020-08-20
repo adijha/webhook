@@ -47,10 +47,8 @@ app.use(
 		store             : new mongoConnect({
 			mongooseConnection : mongoose.connection
 		}),
-		cookie            : {
-			secure   : true,
-			sameSite : 'none'
-		}
+		secure            : true,
+		sameSite          : 'none'
 	})
 );
 //app.use(session({ secure: true, sameSite: 'none' }, app))
