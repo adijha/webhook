@@ -46,9 +46,14 @@ app.use(
 		saveUninitialized: false,
 		store: new mongoConnect({
 			mongooseConnection: mongoose.connection
-		})
+		}),
+  		cookie : {
+  		  sameSite: 'none',
+		  }
 	})
 );
+//app.use(session({ secure: true, sameSite: 'none' }, app))
+
 app.use(function(req, res, next) {
 	res.locals.session = req.session;
 	next();
