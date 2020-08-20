@@ -25,7 +25,7 @@ const axios = require('axios');
 
 const Url = require('./models/Url');
 require('newrelic');
-const forwardingAddress = 'https://sms-update-test.herokuapp.com/'; // Replace this with your HTTPS Forwarding address
+const forwardingAddress = 'https://sms-update-test.herokuapp.com'; // Replace this with your HTTPS Forwarding address
 const connectDB = require('./db/connectMongo');
 connectDB();
 
