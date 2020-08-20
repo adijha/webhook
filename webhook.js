@@ -25,7 +25,7 @@ const axios = require('axios');
 
 const Url = require('./models/Url');
 require('newrelic');
-const forwardingAddress = 'https://bell.ml'; // Replace this with your HTTPS Forwarding address
+const forwardingAddress = 'https://sms-update-test.herokuapp.com/'; // Replace this with your HTTPS Forwarding address
 const connectDB = require('./db/connectMongo');
 connectDB();
 
@@ -36,21 +36,21 @@ let pathname;
 app.use(bodyParser.json());
 app.use(
 	bodyParser.urlencoded({
-		extended: true
+		extended : true
 	})
 );
 app.use(
 	session({
-		secret: 'mylittleSecrets.',
-		resave: false,
-		saveUninitialized: false,
-		store: new mongoConnect({
-			mongooseConnection: mongoose.connection
+		secret            : 'mylittleSecrets.',
+		resave            : false,
+		saveUninitialized : false,
+		store             : new mongoConnect({
+			mongooseConnection : mongoose.connection
 		}),
-  		cookie : {
-			secure: true,
-  		  sameSite: 'none',
-		  }
+		cookie            : {
+			secure   : true,
+			sameSite : 'none'
+		}
 	})
 );
 //app.use(session({ secure: true, sameSite: 'none' }, app))
@@ -101,16 +101,16 @@ const shorten = async (params) => {
 			if (url) {
 				Url.findOneAndUpdate(
 					{
-						id: url.id
+						id : url.id
 					},
 					{
-						$push: {
-							followUp: followUp
+						$push : {
+							followUp : followUp
 						}
 					},
 					{
-						new: true,
-						useFindAndModify: false
+						new              : true,
+						useFindAndModify : false
 					},
 					(err, result) => {
 						if (!err) {
@@ -121,16 +121,16 @@ const shorten = async (params) => {
 					}
 				);
 				let shopDetail = await Store.findOne({
-					name: shop
+					name : shop
 				});
 				let senderId = shopDetail.data['sender id'];
 				let message = 'letMessage';
 				await Store.findOne(
 					{
-						name: shop,
-						orders: {
-							$elemMatch: {
-								id: id
+						name   : shop,
+						orders : {
+							$elemMatch : {
+								id : id
 							}
 						}
 					},
@@ -149,10 +149,10 @@ const shorten = async (params) => {
 				);
 				await Store.findOne(
 					{
-						name: shop,
-						abandanTemplate: {
-							$elemMatch: {
-								topic: followUp
+						name            : shop,
+						abandanTemplate : {
+							$elemMatch : {
+								topic : followUp
 							}
 						}
 					},
@@ -191,16 +191,16 @@ const shorten = async (params) => {
 				});
 				await url.save();
 				let shopDetail = await Store.findOne({
-					name: shop
+					name : shop
 				});
 				let senderId = shopDetail.data['sender id'];
 				let message = 'Message';
 				await Store.findOne(
 					{
-						name: shop,
-						orders: {
-							$elemMatch: {
-								id: id
+						name   : shop,
+						orders : {
+							$elemMatch : {
+								id : id
 							}
 						}
 					},
@@ -219,10 +219,10 @@ const shorten = async (params) => {
 				);
 				await Store.findOne(
 					{
-						name: shop,
-						abandanTemplate: {
-							$elemMatch: {
-								topic: followUp
+						name            : shop,
+						abandanTemplate : {
+							$elemMatch : {
+								topic : followUp
 							}
 						}
 					},
@@ -303,7 +303,10 @@ app.get('/shopify/callback', (req, res) => {
 		delete map['hmac'];
 		const message = querystring.stringify(map);
 		const providedHmac = Buffer.from(hmac, 'utf-8');
-		const generatedHash = Buffer.from(crypto.createHmac('sha256', apiSecret).update(message).digest('hex'), 'utf-8');
+		const generatedHash = Buffer.from(
+			crypto.createHmac('sha256', apiSecret).update(message).digest('hex'),
+			'utf-8'
+		);
 		let hashEquals = false;
 		try {
 			hashEquals = crypto.timingSafeEqual(generatedHash, providedHmac);
@@ -315,13 +318,13 @@ app.get('/shopify/callback', (req, res) => {
 		}
 		const accessTokenRequestUrl = 'https://' + shop + '/admin/oauth/access_token';
 		const accessTokenPayload = {
-			client_id: apiKey,
-			client_secret: apiSecret,
+			client_id     : apiKey,
+			client_secret : apiSecret,
 			code
 		};
 		request
 			.post(accessTokenRequestUrl, {
-				json: accessTokenPayload
+				json : accessTokenPayload
 			})
 			.then((accessTokenResponse) => {
 				Gtoken = accessTokenResponse.access_token;
@@ -344,7 +347,7 @@ app.post('/api/myaction', function(req, res) {
 		console.log('req.body-->320 line details from settings', req.body);
 		Store.findOne(
 			{
-				name: shop
+				name : shop
 			},
 			function(err, data) {
 				if (data) {
@@ -354,17 +357,17 @@ app.post('/api/myaction', function(req, res) {
 					// res.redirect("back");
 					Store.findOneAndUpdate(
 						{
-							name: shop
+							name : shop
 						},
 						{
-							$set: {
-								data: req.body,
-								uninstalled: false
+							$set : {
+								data        : req.body,
+								uninstalled : false
 							}
 						},
 						{
-							new: true,
-							useFindAndModify: false
+							new              : true,
+							useFindAndModify : false
 						},
 						(err, data) => {
 							if (!err) {
@@ -377,59 +380,59 @@ app.post('/api/myaction', function(req, res) {
 				} else {
 					console.log('store !found in DB');
 					const store = new Store({
-						name: shop,
-						uninstalled: false,
-						recharge: 10,
-						data: req.body,
-						smsCount: 10,
-						template: [
+						name            : shop,
+						uninstalled     : false,
+						recharge        : 10,
+						data            : req.body,
+						smsCount        : 10,
+						template        : [
 							{
-								topic: 'orders/create',
-								customer:
+								topic    : 'orders/create',
+								customer :
 									'`Hi%20${name},%20Thanks%20for%20shopping%20with%20us!%20Your%20order%20is%20confirmed.%20Your%20order%20ID:%20${order_id}`',
-								admin: '`Hi%20Admin,%20${name}%20placed%20order`'
+								admin    : '`Hi%20Admin,%20${name}%20placed%20order`'
 							},
 							{
-								topic: 'orders/cancelled',
-								customer:
+								topic    : 'orders/cancelled',
+								customer :
 									'`Hi%20${name}%20your%20order%20ID:%20${order_id}%20is%20cancelled.%20We%20started%20your%20refund%20process.`',
-								admin: '`Hi%20Admin,%20${name}%20cancelled%20order%20`'
+								admin    : '`Hi%20Admin,%20${name}%20cancelled%20order%20`'
 							},
 							{
-								topic: 'orders/fulfilled',
-								customer:
+								topic    : 'orders/fulfilled',
+								customer :
 									'`Hi%20${name}%20your%20order%20ID:%20${order_id}%20is%20fulfilled.%20We%20started%20your%20delivery%20process.`',
-								admin: "`Hi%20Admin,%20${name}'s%20order%20fulfilled`"
+								admin    : "`Hi%20Admin,%20${name}'s%20order%20fulfilled`"
 							}
 						],
-						abandanTemplate: [
+						abandanTemplate : [
 							{
-								topic: '1',
-								template:
+								topic    : '1',
+								template :
 									"`Hey%20${customer_name}!%20We%20noticed%20you%20left%20some%20items%20in%20your%20cart.%20Get%20them%20before%20they're%20gone!%20Visit%20this%20link%20to%20complete%20the%20order:%20${abandoned_checkout_url}.%20-${store_name}`",
-								time: '30',
-								status: false
+								time     : '30',
+								status   : false
 							},
 							{
-								topic: '2',
-								template:
+								topic    : '2',
+								template :
 									"`Hey%20${customer_name}!%20We%20noticed%20you%20left%20some%20items%20in%20your%20cart.%20Get%20them%20before%20they're%20gone!%20Visit%20this%20link%20to%20complete%20the%20order:%20${abandoned_checkout_url}.%20-${store_name}`",
-								time: '60',
-								status: false
+								time     : '60',
+								status   : false
 							},
 							{
-								topic: '3',
-								template:
+								topic    : '3',
+								template :
 									"`Hey%20${customer_name}!%20We%20noticed%20you%20left%20some%20items%20in%20your%20cart.%20Get%20them%20before%20they're%20gone!%20Visit%20this%20link%20to%20complete%20the%20order:%20${abandoned_checkout_url}.%20-${store_name}`",
-								time: '60',
-								status: false
+								time     : '60',
+								status   : false
 							},
 							{
-								topic: '4',
-								template:
+								topic    : '4',
+								template :
 									"`Hey%20${customer_name}!%20We%20noticed%20you%20left%20some%20items%20in%20your%20cart.%20Get%20them%20before%20they're%20gone!%20Visit%20this%20link%20to%20complete%20the%20order:%20${abandoned_checkout_url}.%20-${store_name}`",
-								time: '60',
-								status: false
+								time     : '60',
+								status   : false
 							}
 						]
 					});
@@ -450,7 +453,7 @@ app.post('/api/myaction', function(req, res) {
 					];
 					topics.forEach((topic) => {
 						makeWebook(topic, token, hmac, shop);
-						console.log({topic, token, hmac, shop});
+						console.log({ topic, token, hmac, shop });
 					});
 					res.sendStatus(200);
 					// .redirect(`https://${shop}/admin/apps/sms_update`);
@@ -464,24 +467,24 @@ app.post('/api/myaction', function(req, res) {
 const makeWebook = (topic, token, hmac, shop) => {
 	const webhookUrl = 'https://' + shop + '/admin/api/2019-07/webhooks.json';
 	const webhookHeaders = {
-		'Content-Type': 'application/json',
-		'X-Shopify-Access-Token': token,
-		'X-Shopify-Topic': topic,
-		'X-Shopify-Hmac-Sha256': hmac,
-		'X-Shopify-Shop-Domain': shop,
-		'X-Shopify-API-Version': '2019-07'
+		'Content-Type'           : 'application/json',
+		'X-Shopify-Access-Token' : token,
+		'X-Shopify-Topic'        : topic,
+		'X-Shopify-Hmac-Sha256'  : hmac,
+		'X-Shopify-Shop-Domain'  : shop,
+		'X-Shopify-API-Version'  : '2019-07'
 	};
 	const webhookPayload = {
-		webhook: {
-			topic: topic,
-			address: `https://bell.ml/store/${shop}/${topic}`,
-			format: 'json'
+		webhook : {
+			topic   : topic,
+			address : `https://bell.ml/store/${shop}/${topic}`,
+			format  : 'json'
 		}
 	};
 	request
 		.post(webhookUrl, {
-			headers: webhookHeaders,
-			json: webhookPayload
+			headers : webhookHeaders,
+			json    : webhookPayload
 		})
 		.then((shopResponse) => {
 			console.log('webhook topic :', topic);
@@ -498,7 +501,7 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 	console.log('topic -->', topic);
 	Store.findOne(
 		{
-			name: shop
+			name : shop
 		},
 		async (err, data) => {
 			if (!err) {
@@ -522,10 +525,10 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 							if (request.body.shipping_address.phone != null) {
 								Store.findOne(
 									{
-										name: shop,
-										orders: {
-											$elemMatch: {
-												id: request.body.id
+										name   : shop,
+										orders : {
+											$elemMatch : {
+												id : request.body.id
 											}
 										}
 									},
@@ -552,17 +555,17 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 													}
 												}
 												let obj = {
-													id: request.body.id,
-													phone: request.body.shipping_address.phone.replace(/\s/g, ''),
-													name: checkoutName,
-													email: request.body.email,
-													vendor: request.body.line_items[0].vendor,
-													price: request.body.subtotal_price,
-													url: request.body.abandoned_checkout_url
+													id     : request.body.id,
+													phone  : request.body.shipping_address.phone.replace(/\s/g, ''),
+													name   : checkoutName,
+													email  : request.body.email,
+													vendor : request.body.line_items[0].vendor,
+													price  : request.body.subtotal_price,
+													url    : request.body.abandoned_checkout_url
 												};
 												Store.findOne(
 													{
-														name: shop
+														name : shop
 													},
 													function(err, data) {
 														if (data.abandanTemplate) {
@@ -579,16 +582,16 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 															});
 															Store.findOneAndUpdate(
 																{
-																	name: shop
+																	name : shop
 																},
 																{
-																	$addToSet: {
-																		orders: obj
+																	$addToSet : {
+																		orders : obj
 																	}
 																},
 																{
-																	new: true,
-																	useFindAndModify: false
+																	new              : true,
+																	useFindAndModify : false
 																},
 																(err, data) => {
 																	if (!err) {
@@ -641,12 +644,12 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 						try {
 							let updated = await Store.updateOne(
 								{
-									name: shop,
-									'orders.id': request.body.checkout_id
+									name        : shop,
+									'orders.id' : request.body.checkout_id
 								},
 								{
-									$set: {
-										'orders.$.purchase': true
+									$set : {
+										'orders.$.purchase' : true
 									}
 								}
 							);
@@ -658,16 +661,16 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 							try {
 								let ourConverted = await Store.updateOne(
 									{
-										name: shop,
-										clicked: {
-											$elemMatch: {
-												checkoutId: request.body.checkout_id
+										name    : shop,
+										clicked : {
+											$elemMatch : {
+												checkoutId : request.body.checkout_id
 											}
 										}
 									},
 									{
-										$set: {
-											'clicked.$.converted': true
+										$set : {
+											'clicked.$.converted' : true
 										}
 									}
 								);
@@ -835,7 +838,10 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 						fulfillment_status = request.body.fulfillment_status;
 						updated_at = request.body.updated_at;
 						order_status_url = request.body.order_status_url;
-						if (data.data['orders/fulfilled customer'] === true && data.data['orders/fulfilled admin'] === true) {
+						if (
+							data.data['orders/fulfilled customer'] === true &&
+							data.data['orders/fulfilled admin'] === true
+						) {
 							// data.smsCount + 2
 							// Store.findOneAndUpdate(
 							// 	{
@@ -884,7 +890,10 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 													message = message.replace('${title}', title);
 												}
 												if (message.includes('${fulfillment_status}')) {
-													message = message.replace('${fulfillment_status}', fulfillment_status);
+													message = message.replace(
+														'${fulfillment_status}',
+														fulfillment_status
+													);
 												}
 												if (message.includes('${order_status_url}')) {
 													message = message.replace('${order_status_url}', order_status_url);
@@ -934,7 +943,10 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 													message = message.replace('${title}', title);
 												}
 												if (message.includes('${fulfillment_status}')) {
-													message = message.replace('${fulfillment_status}', fulfillment_status);
+													message = message.replace(
+														'${fulfillment_status}',
+														fulfillment_status
+													);
 												}
 												if (message.includes('${order_status_url}')) {
 													message = message.replace('${order_status_url}', order_status_url);
@@ -977,7 +989,10 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 						country = request.body.shipping_address.country;
 						cancelled_at = request.body.cancelled_at;
 						cancel_reason = request.body.cancel_reason;
-						if (data.data['orders/cancelled customer'] === true && data.data['orders/cancelled admin'] === true) {
+						if (
+							data.data['orders/cancelled customer'] === true &&
+							data.data['orders/cancelled admin'] === true
+						) {
 							// Store.findOneAndUpdate(
 							// 	{
 							// 		name: shop
@@ -1093,16 +1108,16 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 						try {
 							const uninstalle = await Store.findOneAndUpdate(
 								{
-									name: shop
+									name : shop
 								},
 								{
-									$set: {
-										uninstalled: true
+									$set : {
+										uninstalled : true
 									}
 								},
 								{
-									new: true,
-									useFindAndModify: false
+									new              : true,
+									useFindAndModify : false
 								}
 							);
 							console.log('someone uninstalled app', shop);
@@ -1125,7 +1140,7 @@ app.post('/store/:shop/:topic/:subtopic', function(request, response) {
 });
 
 const sndSms = async (phone, message, senderID, shop) => {
-	console.log("sms api hit");
+	console.log('sms api hit');
 	message = message.replace(/ /g, '%20');
 	console.log('type:->> ', typeof phone, phone, 'phone 971 webhook');
 	console.log(phone, '<-- phone sndSmS');
@@ -1174,46 +1189,47 @@ const sndSms = async (phone, message, senderID, shop) => {
 	} else {
 		console.log(" can't send sms because, phone number is < 10 digits i.e : ", phone);
 	}
-	
+
 	Store.findOne(
 		{
-			name: shop
+			name : shop
 		},
-		async function (err, data){
+		async function(err, data) {
 			if (!err) {
-				console.log('dddsdsd df dkv dv ckd v d')
+				console.log('dddsdsd df dkv dv ckd v d');
 				let smsapi = process.env.SMS_API;
 				let LeftSMS = data.smsCount - data.sms.length;
 				if (LeftSMS > 0) {
 					//send SMS
 
-var options = {
-	method: 'GET',
-  url: 'https://global.datagenit.com/API/sms-api.php',
-  qs:
-   { auth: 'D!~42924V0hc35Jaf',
-     senderid: senderID,
-     msisdn: phone,
-     message: message },
-  headers:
-   {'cache-control': 'no-cache' },
- rejectUnauthorized: false };
+					var options = {
+						method             : 'GET',
+						url                : 'https://global.datagenit.com/API/sms-api.php',
+						qs                 : {
+							auth     : 'D!~42924V0hc35Jaf',
+							senderid : senderID,
+							msisdn   : phone,
+							message  : message
+						},
+						headers            : { 'cache-control': 'no-cache' },
+						rejectUnauthorized : false
+					};
 					//  var options = {
-          //   method: "GET",
-          //   hostname: "api.datagenit.com",
-          //   port: null,
-          //   path: `https://api.datagenit.com/sms?auth=${smsapi}&msisdn=${phone}&senderid=${senderID}&message=${message}`,
-          //   headers: {},
-          // };
+					//   method: "GET",
+					//   hostname: "api.datagenit.com",
+					//   port: null,
+					//   path: `https://api.datagenit.com/sms?auth=${smsapi}&msisdn=${phone}&senderid=${senderID}&message=${message}`,
+					//   headers: {},
+					// };
 					try {
-						console.log("options", options);
+						console.log('options', options);
 
-								var req =  request(options, function (error, response, body) {
-								  if (error) throw new Error("sms error send",error);
+						var req = request(options, function(error, response, body) {
+							if (error) throw new Error('sms error send', error);
 
-								  console.log(body);
-									return body
-								});
+							console.log(body);
+							return body;
+						});
 						// var req =  request(options, function(res) {
 						// 	console.log(res);
 						// 	var chunks = [];
@@ -1230,22 +1246,22 @@ var options = {
 					}
 					//save sms data to DB
 					var obj = {
-						description: message.replace(/%20/g, ' ').replace(/%0A/g, ' '),
-						term: phone
+						description : message.replace(/%20/g, ' ').replace(/%0A/g, ' '),
+						term        : phone
 					};
 					``;
 					Store.findOneAndUpdate(
 						{
-							name: shop
+							name : shop
 						},
 						{
-							$push: {
-								sms: obj
+							$push : {
+								sms : obj
 							}
 						},
 						{
-							new: true,
-							useFindAndModify: false
+							new              : true,
+							useFindAndModify : false
 						},
 						(err, data) => {
 							if (!err) {
@@ -1295,7 +1311,7 @@ app.get('/api/option', async (req, res) => {
 	if (req.session.shop) {
 		try {
 			const result = await Store.findOne({
-				name: req.session.shop
+				name : req.session.shop
 			});
 			console.log('data found');
 
@@ -1316,7 +1332,7 @@ app.get('/api/abandanTemplate', async (req, res) => {
 	if (req.session.shop) {
 		try {
 			const data = await Store.findOne({
-				name: req.session.shop
+				name : req.session.shop
 			});
 
 			res.send(data.abandanTemplate);
@@ -1335,7 +1351,7 @@ app.get('/api/template', async (req, res) => {
 	if (req.session.shop) {
 		try {
 			const data = await Store.findOne({
-				name: req.session.shop
+				name : req.session.shop
 			});
 
 			res.send(data.template);
@@ -1414,7 +1430,7 @@ app.get('/api/dashboard', async (req, res) => {
 		let clickThroughCount = [ 0, 0, 0, 0 ];
 		try {
 			const currentStore = await Store.findOne({
-				name: req.session.shop
+				name : req.session.shop
 			});
 
 			currentStore.clicked.forEach(async (element) => {
@@ -1464,9 +1480,9 @@ app.get('/api/dashboard', async (req, res) => {
 			console.error(error);
 
 			res.send({
-				convertedFolowUpCount: [ 9, 9, 9, 9 ],
-				clickThroughCount: [ 99, 99, 99, 99 ],
-				convertedFolowUpPrice: [ 999, 999, 999, 9 ]
+				convertedFolowUpCount : [ 9, 9, 9, 9 ],
+				clickThroughCount     : [ 99, 99, 99, 99 ],
+				convertedFolowUpPrice : [ 999, 999, 999, 9 ]
 			});
 			console.log('cant find session key form get /api/dashboard || your session timeout');
 		}
@@ -1491,43 +1507,43 @@ app.post('/api/template', function(req, res) {
 		if (req.session.shop) {
 			Store.findOneAndUpdate(
 				{
-					name: req.session.shop,
-					'template.topic': topic
+					name             : req.session.shop,
+					'template.topic' : topic
 				},
 				{
-					$set: {
-						'template.$.topic': topic,
-						'template.$.customer': customer
+					$set : {
+						'template.$.topic'    : topic,
+						'template.$.customer' : customer
 					}
 				},
 				{
-					new: true,
-					useFindAndModify: false
+					new              : true,
+					useFindAndModify : false
 				},
 				(err, result) => {
 					if (err) {
 						console.log(err);
 					} else {
 						let obj = {
-							topic: topic,
-							customer: customer,
-							admin: admin
+							topic    : topic,
+							customer : customer,
+							admin    : admin
 						};
 						if (result === null) {
 							console.log('result === null');
 							Store.findOneAndUpdate(
 								{
-									name: req.session.shop
+									name : req.session.shop
 								},
 								{
 									// $addToSet: { template: req.body }
-									$addToSet: {
-										template: obj
+									$addToSet : {
+										template : obj
 									}
 								},
 								{
-									new: true,
-									useFindAndModify: false
+									new              : true,
+									useFindAndModify : false
 								},
 								(err, data) => {
 									console.log('delte form db');
@@ -1550,43 +1566,43 @@ app.post('/api/template', function(req, res) {
 		if (req.session.shop) {
 			Store.findOneAndUpdate(
 				{
-					name: req.session.shop,
-					'template.topic': topic
+					name             : req.session.shop,
+					'template.topic' : topic
 				},
 				{
-					$set: {
-						'template.$.topic': topic,
+					$set : {
+						'template.$.topic' : topic,
 						// "template.$.customer": customer,
-						'template.$.admin': admin
+						'template.$.admin' : admin
 					}
 				},
 				{
-					new: true,
-					useFindAndModify: false
+					new              : true,
+					useFindAndModify : false
 				},
 				(err, result) => {
 					if (err) {
 						console.log(err);
 					} else {
 						let obj = {
-							topic: topic,
-							customer: customer,
-							admin: admin
+							topic    : topic,
+							customer : customer,
+							admin    : admin
 						};
 						if (result === null) {
 							Store.findOneAndUpdate(
 								{
-									name: req.session.shop
+									name : req.session.shop
 								},
 								{
 									// $addToSet: { template: req.body }
-									$addToSet: {
-										template: obj
+									$addToSet : {
+										template : obj
 									}
 								},
 								{
-									new: true,
-									useFindAndModify: false
+									new              : true,
+									useFindAndModify : false
 								},
 								(err, data) => {
 									console.log('delte form db');
@@ -1613,20 +1629,20 @@ app.post('/api/abandanTemplate', function(req, res) {
 	if (req.session.shop) {
 		Store.findOneAndUpdate(
 			{
-				name: req.session.shop,
-				'abandanTemplate.topic': req.body.topic
+				name                    : req.session.shop,
+				'abandanTemplate.topic' : req.body.topic
 			},
 			{
-				$set: {
-					'abandanTemplate.$.topic': req.body.topic,
-					'abandanTemplate.$.template': req.body.template,
-					'abandanTemplate.$.time': req.body.time,
-					'abandanTemplate.$.status': req.body.status
+				$set : {
+					'abandanTemplate.$.topic'    : req.body.topic,
+					'abandanTemplate.$.template' : req.body.template,
+					'abandanTemplate.$.time'     : req.body.time,
+					'abandanTemplate.$.status'   : req.body.status
 				}
 			},
 			{
-				new: true,
-				useFindAndModify: false
+				new              : true,
+				useFindAndModify : false
 			},
 			(err, result) => {
 				console.log(result, 'result');
@@ -1637,16 +1653,16 @@ app.post('/api/abandanTemplate', function(req, res) {
 						console.log('result ==null');
 						Store.findOneAndUpdate(
 							{
-								name: req.session.shop
+								name : req.session.shop
 							},
 							{
-								$addToSet: {
-									abandanTemplate: req.body
+								$addToSet : {
+									abandanTemplate : req.body
 								}
 							},
 							{
-								new: true,
-								useFindAndModify: false
+								new              : true,
+								useFindAndModify : false
 							},
 							(err, data) => {
 								if (!err) {
@@ -1711,7 +1727,7 @@ cron.schedule('*/2 * * * * ', async () => {
 	var storeName = [];
 	try {
 		const stores = await Store.find({
-			uninstalled: false
+			uninstalled : false
 
 			// smsCount: {
 			// 	$gt: 0
@@ -1741,14 +1757,14 @@ cron.schedule('*/2 * * * * ', async () => {
 						if (moment(order.f1).isBetween(interval, current)) {
 							console.log('call shortner function for', order.f1);
 							let obj = {
-								longUrl: order.url,
-								phone: order.phone,
-								followUp: 1,
-								id: order.id,
-								price: order.price,
-								vendor: order.vendor,
-								name: order.name,
-								shop: store
+								longUrl  : order.url,
+								phone    : order.phone,
+								followUp : 1,
+								id       : order.id,
+								price    : order.price,
+								vendor   : order.vendor,
+								name     : order.name,
+								shop     : store
 							};
 							const short = async () => {
 								let res = '';
@@ -1762,14 +1778,14 @@ cron.schedule('*/2 * * * * ', async () => {
 						if (moment(order.f2).isBetween(interval, current)) {
 							console.log('call shortner function for', order.f2);
 							let obj = {
-								longUrl: order.url,
-								followUp: 2,
-								id: order.id,
-								price: order.price,
-								phone: order.phone,
-								vendor: order.vendor,
-								name: order.name,
-								shop: store
+								longUrl  : order.url,
+								followUp : 2,
+								id       : order.id,
+								price    : order.price,
+								phone    : order.phone,
+								vendor   : order.vendor,
+								name     : order.name,
+								shop     : store
 							};
 							const short = async () => {
 								let res = '';
@@ -1783,14 +1799,14 @@ cron.schedule('*/2 * * * * ', async () => {
 						if (moment(order.f3).isBetween(interval, current)) {
 							console.log('call shortner function for', order.f3);
 							let obj = {
-								longUrl: order.url,
-								followUp: 3,
-								id: order.id,
-								price: order.price,
-								phone: order.phone,
-								vendor: order.vendor,
-								name: order.name,
-								shop: store
+								longUrl  : order.url,
+								followUp : 3,
+								id       : order.id,
+								price    : order.price,
+								phone    : order.phone,
+								vendor   : order.vendor,
+								name     : order.name,
+								shop     : store
 							};
 							const short = async () => {
 								let res = '';
@@ -1804,14 +1820,14 @@ cron.schedule('*/2 * * * * ', async () => {
 						if (moment(order.f4).isBetween(interval, current)) {
 							console.log('call shortner function for', order.f4);
 							let obj = {
-								longUrl: order.url,
-								followUp: 4,
-								phone: order.phone,
-								id: order.id,
-								price: order.price,
-								vendor: order.vendor,
-								name: order.name,
-								shop: store
+								longUrl  : order.url,
+								followUp : 4,
+								phone    : order.phone,
+								id       : order.id,
+								price    : order.price,
+								vendor   : order.vendor,
+								name     : order.name,
+								shop     : store
 							};
 							const short = async () => {
 								let res = '';
@@ -1832,12 +1848,11 @@ cron.schedule('*/2 * * * * ', async () => {
 });
 
 // if (process.env.NODE_ENV === 'production') {
-	app.use(express.static('client/build'));
-	app.get('*', (req, res) => {
-		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-	});
+app.use(express.static('client/build'));
+app.get('*', (req, res) => {
+	res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+});
 // }
-
 
 app.post('/whatsapp', function(req, res) {
 	res.sendStatus(200);
