@@ -283,7 +283,10 @@ app.get('/shopify', (req, res) => {
 			state +
 			'&redirect_uri=' +
 			redirectUri;
-		res.cookie(req.session.shop, state);
+		res.cookie(req.session.shop, state, {
+			secure   : true,
+			sameSite : 'none'
+		});
 		res.redirect(installUrl);
 	} else {
 		return res
