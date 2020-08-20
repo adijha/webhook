@@ -48,6 +48,7 @@ app.use(
 			mongooseConnection: mongoose.connection
 		}),
   		cookie : {
+			secure: true,
   		  sameSite: 'none',
 		  }
 	})
