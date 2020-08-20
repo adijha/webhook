@@ -40,16 +40,19 @@ app.use(
 	})
 );
 app.use(
-	session({
-		secret            : 'mylittleSecrets.',
-		resave            : false,
-		saveUninitialized : false,
-		store             : new mongoConnect({
-			mongooseConnection : mongoose.connection
-		}),
-		secure            : true,
-		sameSite          : 'none'
-	})
+	session(
+		{
+			secret            : 'mylittleSecrets.',
+			resave            : false,
+			saveUninitialized : false,
+			store             : new mongoConnect({
+				mongooseConnection : mongoose.connection
+			}),
+			secure            : true,
+			sameSite          : 'none'
+		},
+		app
+	)
 );
 //app.use(session({ secure: true, sameSite: 'none' }, app))
 
