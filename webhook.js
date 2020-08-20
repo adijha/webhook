@@ -40,21 +40,21 @@ app.use(
 	})
 );
 app.use(
-	session(
-		{
-			secret            : 'mylittleSecrets.',
-			resave            : false,
-			saveUninitialized : false,
-			store             : new mongoConnect({
-				mongooseConnection : mongoose.connection
-			}),
-			secure            : true,
-			sameSite          : 'none'
-		},
-		app
-	)
+	session({
+		secret            : 'mylittleSecrets.',
+		resave            : false,
+		saveUninitialized : false,
+		store             : new mongoConnect({
+			mongooseConnection : mongoose.connection
+		}),
+		cookie            : {
+			secure   : true,
+			sameSite : 'none'
+		}
+	})
 );
-//app.use(session({ secure: true, sameSite: 'none' }, app))
+
+app.set('trust proxy', true);
 
 app.use(function(req, res, next) {
 	res.locals.session = req.session;
