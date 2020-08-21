@@ -53,6 +53,7 @@ app.use(
 		  }
 	})
 );
+app.set('trust proxy', true);
 //app.use(session({ secure: true, sameSite: 'none' }, app))
 
 app.use(function(req, res, next) {
