@@ -36,7 +36,7 @@ let pathname;
 app.use(bodyParser.json());
 app.use(
 	bodyParser.urlencoded({
-		extended: true,
+		extended: true
 	})
 );
 app.use(
@@ -45,12 +45,12 @@ app.use(
 		resave: false,
 		saveUninitialized: false,
 		store: new mongoConnect({
-			mongooseConnection: mongoose.connection,
+			mongooseConnection: mongoose.connection
 		}),
 		cookie: {
 			secure: true,
-			sameSite: 'none',
-		},
+			sameSite: 'none'
+		}
 	})
 );
 
@@ -97,21 +97,21 @@ const shorten = async (params) => {
 	if (validUrl.isUri(longUrl)) {
 		try {
 			let url = await Url.findOne({
-				longUrl,
+				longUrl
 			});
 			if (url) {
 				Url.findOneAndUpdate(
 					{
-						id: url.id,
+						id: url.id
 					},
 					{
 						$push: {
-							followUp: followUp,
-						},
+							followUp: followUp
+						}
 					},
 					{
 						new: true,
-						useFindAndModify: false,
+						useFindAndModify: false
 					},
 					(err, result) => {
 						if (!err) {
@@ -122,7 +122,7 @@ const shorten = async (params) => {
 					}
 				);
 				let shopDetail = await Store.findOne({
-					name: shop,
+					name: shop
 				});
 				let senderId = shopDetail.data['sender id'];
 				let message = 'letMessage';
@@ -131,9 +131,9 @@ const shorten = async (params) => {
 						name: shop,
 						orders: {
 							$elemMatch: {
-								id: id,
-							},
-						},
+								id: id
+							}
+						}
 					},
 					(err, data) => {
 						if (err) {
@@ -153,9 +153,9 @@ const shorten = async (params) => {
 						name: shop,
 						abandanTemplate: {
 							$elemMatch: {
-								topic: followUp,
-							},
-						},
+								topic: followUp
+							}
+						}
 					},
 					(err, data) => {
 						if (err) {
@@ -190,12 +190,12 @@ const shorten = async (params) => {
 					followUp,
 					id,
 					shop,
-					price,
+					price
 					//   name
 				});
 				await url.save();
 				let shopDetail = await Store.findOne({
-					name: shop,
+					name: shop
 				});
 				let senderId = shopDetail.data['sender id'];
 				let message = 'Message';
@@ -204,9 +204,9 @@ const shorten = async (params) => {
 						name: shop,
 						orders: {
 							$elemMatch: {
-								id: id,
-							},
-						},
+								id: id
+							}
+						}
 					},
 					(err, data) => {
 						if (err) {
@@ -226,9 +226,9 @@ const shorten = async (params) => {
 						name: shop,
 						abandanTemplate: {
 							$elemMatch: {
-								topic: followUp,
-							},
-						},
+								topic: followUp
+							}
+						}
 					},
 					(err, data) => {
 						if (err) {
@@ -283,7 +283,7 @@ app.get('/shopify', (req, res) => {
 				'read_analytics',
 				'read_orders ',
 				'read_script_tags',
-				'write_script_tags',
+				'write_script_tags'
 			] +
 			'&state=' +
 			state +
@@ -291,7 +291,7 @@ app.get('/shopify', (req, res) => {
 			redirectUri;
 		res.cookie(req.session.shop, state, {
 			secure: true,
-			sameSite: 'none',
+			sameSite: 'none'
 		});
 		res.redirect(installUrl);
 	} else {
@@ -333,11 +333,11 @@ app.get('/shopify/callback', (req, res) => {
 		const accessTokenPayload = {
 			client_id: apiKey,
 			client_secret: apiSecret,
-			code,
+			code
 		};
 		request
 			.post(accessTokenRequestUrl, {
-				json: accessTokenPayload,
+				json: accessTokenPayload
 			})
 			.then((accessTokenResponse) => {
 				Gtoken = accessTokenResponse.access_token;
@@ -360,7 +360,7 @@ app.post('/api/myaction', function (req, res) {
 		console.log('req.body-->320 line details from settings', req.body);
 		Store.findOne(
 			{
-				name: shop,
+				name: shop
 			},
 			function (err, data) {
 				if (data) {
@@ -370,17 +370,17 @@ app.post('/api/myaction', function (req, res) {
 					// res.redirect("back");
 					Store.findOneAndUpdate(
 						{
-							name: shop,
+							name: shop
 						},
 						{
 							$set: {
 								data: req.body,
-								uninstalled: false,
-							},
+								uninstalled: false
+							}
 						},
 						{
 							new: true,
-							useFindAndModify: false,
+							useFindAndModify: false
 						},
 						(err, data) => {
 							if (!err) {
@@ -403,20 +403,20 @@ app.post('/api/myaction', function (req, res) {
 								topic: 'orders/create',
 								customer:
 									'`Hi%20${name},%20Thanks%20for%20shopping%20with%20us!%20Your%20order%20is%20confirmed.%20Your%20order%20ID:%20${order_id}`',
-								admin: '`Hi%20Admin,%20${name}%20placed%20order`',
+								admin: '`Hi%20Admin,%20${name}%20placed%20order`'
 							},
 							{
 								topic: 'orders/cancelled',
 								customer:
 									'`Hi%20${name}%20your%20order%20ID:%20${order_id}%20is%20cancelled.%20We%20started%20your%20refund%20process.`',
-								admin: '`Hi%20Admin,%20${name}%20cancelled%20order%20`',
+								admin: '`Hi%20Admin,%20${name}%20cancelled%20order%20`'
 							},
 							{
 								topic: 'orders/fulfilled',
 								customer:
 									'`Hi%20${name}%20your%20order%20ID:%20${order_id}%20is%20fulfilled.%20We%20started%20your%20delivery%20process.`',
-								admin: "`Hi%20Admin,%20${name}'s%20order%20fulfilled`",
-							},
+								admin: "`Hi%20Admin,%20${name}'s%20order%20fulfilled`"
+							}
 						],
 						abandanTemplate: [
 							{
@@ -424,30 +424,30 @@ app.post('/api/myaction', function (req, res) {
 								template:
 									"`Hey%20${customer_name}!%20We%20noticed%20you%20left%20some%20items%20in%20your%20cart.%20Get%20them%20before%20they're%20gone!%20Visit%20this%20link%20to%20complete%20the%20order:%20${abandoned_checkout_url}.%20-${store_name}`",
 								time: '30',
-								status: false,
+								status: false
 							},
 							{
 								topic: '2',
 								template:
 									"`Hey%20${customer_name}!%20We%20noticed%20you%20left%20some%20items%20in%20your%20cart.%20Get%20them%20before%20they're%20gone!%20Visit%20this%20link%20to%20complete%20the%20order:%20${abandoned_checkout_url}.%20-${store_name}`",
 								time: '60',
-								status: false,
+								status: false
 							},
 							{
 								topic: '3',
 								template:
 									"`Hey%20${customer_name}!%20We%20noticed%20you%20left%20some%20items%20in%20your%20cart.%20Get%20them%20before%20they're%20gone!%20Visit%20this%20link%20to%20complete%20the%20order:%20${abandoned_checkout_url}.%20-${store_name}`",
 								time: '60',
-								status: false,
+								status: false
 							},
 							{
 								topic: '4',
 								template:
 									"`Hey%20${customer_name}!%20We%20noticed%20you%20left%20some%20items%20in%20your%20cart.%20Get%20them%20before%20they're%20gone!%20Visit%20this%20link%20to%20complete%20the%20order:%20${abandoned_checkout_url}.%20-${store_name}`",
 								time: '60',
-								status: false,
-							},
-						],
+								status: false
+							}
+						]
 					});
 					store.save(function (err, data) {
 						if (!err) {
@@ -462,7 +462,7 @@ app.post('/api/myaction', function (req, res) {
 						'orders/create',
 						'checkouts/create',
 						'checkouts/update',
-						'app/uninstalled',
+						'app/uninstalled'
 					];
 					topics.forEach((topic) => {
 						makeWebook(topic, token, hmac, shop);
@@ -485,19 +485,19 @@ const makeWebook = (topic, token, hmac, shop) => {
 		'X-Shopify-Topic': topic,
 		'X-Shopify-Hmac-Sha256': hmac,
 		'X-Shopify-Shop-Domain': shop,
-		'X-Shopify-API-Version': '2019-07',
+		'X-Shopify-API-Version': '2019-07'
 	};
 	const webhookPayload = {
 		webhook: {
 			topic: topic,
 			address: `https://bell.ml/store/${shop}/${topic}`,
-			format: 'json',
-		},
+			format: 'json'
+		}
 	};
 	request
 		.post(webhookUrl, {
 			headers: webhookHeaders,
-			json: webhookPayload,
+			json: webhookPayload
 		})
 		.then((shopResponse) => {
 			console.log('webhook topic :', topic);
@@ -514,7 +514,7 @@ app.post('/store/:shop/:topic/:subtopic', function (request, response) {
 	console.log('topic -->', topic);
 	Store.findOne(
 		{
-			name: shop,
+			name: shop
 		},
 		async (err, data) => {
 			if (!err) {
@@ -541,9 +541,9 @@ app.post('/store/:shop/:topic/:subtopic', function (request, response) {
 										name: shop,
 										orders: {
 											$elemMatch: {
-												id: request.body.id,
-											},
-										},
+												id: request.body.id
+											}
+										}
 									},
 									(err, data) => {
 										if (err) {
@@ -577,11 +577,11 @@ app.post('/store/:shop/:topic/:subtopic', function (request, response) {
 													email: request.body.email,
 													vendor: request.body.line_items[0].vendor,
 													price: request.body.subtotal_price,
-													url: request.body.abandoned_checkout_url,
+													url: request.body.abandoned_checkout_url
 												};
 												Store.findOne(
 													{
-														name: shop,
+														name: shop
 													},
 													function (err, data) {
 														if (data.abandanTemplate) {
@@ -615,16 +615,16 @@ app.post('/store/:shop/:topic/:subtopic', function (request, response) {
 															});
 															Store.findOneAndUpdate(
 																{
-																	name: shop,
+																	name: shop
 																},
 																{
 																	$addToSet: {
-																		orders: obj,
-																	},
+																		orders: obj
+																	}
 																},
 																{
 																	new: true,
-																	useFindAndModify: false,
+																	useFindAndModify: false
 																},
 																(err, data) => {
 																	if (!err) {
@@ -678,12 +678,12 @@ app.post('/store/:shop/:topic/:subtopic', function (request, response) {
 							let updated = await Store.updateOne(
 								{
 									name: shop,
-									'orders.id': request.body.checkout_id,
+									'orders.id': request.body.checkout_id
 								},
 								{
 									$set: {
-										'orders.$.purchase': true,
-									},
+										'orders.$.purchase': true
+									}
 								}
 							);
 							// if (updated) {
@@ -697,14 +697,14 @@ app.post('/store/:shop/:topic/:subtopic', function (request, response) {
 										name: shop,
 										clicked: {
 											$elemMatch: {
-												checkoutId: request.body.checkout_id,
-											},
-										},
+												checkoutId: request.body.checkout_id
+											}
+										}
 									},
 									{
 										$set: {
-											'clicked.$.converted': true,
-										},
+											'clicked.$.converted': true
+										}
 									}
 								);
 
@@ -1183,16 +1183,16 @@ app.post('/store/:shop/:topic/:subtopic', function (request, response) {
 						try {
 							const uninstalle = await Store.findOneAndUpdate(
 								{
-									name: shop,
+									name: shop
 								},
 								{
 									$set: {
-										uninstalled: true,
-									},
+										uninstalled: true
+									}
 								},
 								{
 									new: true,
-									useFindAndModify: false,
+									useFindAndModify: false
 								}
 							);
 							console.log('someone uninstalled app', shop);
@@ -1293,7 +1293,7 @@ const sndSms = async (phone, message, senderID, shop) => {
 
 	Store.findOne(
 		{
-			name: shop,
+			name: shop
 		},
 		async function (err, data) {
 			if (!err) {
@@ -1310,10 +1310,10 @@ const sndSms = async (phone, message, senderID, shop) => {
 							auth: 'D!~42924V0hc35Jaf',
 							senderid: senderID,
 							msisdn: phone,
-							message: message,
+							message: message
 						},
 						headers: { 'cache-control': 'no-cache' },
-						rejectUnauthorized: false,
+						rejectUnauthorized: false
 					};
 					//  var options = {
 					//   method: "GET",
@@ -1348,21 +1348,21 @@ const sndSms = async (phone, message, senderID, shop) => {
 					//save sms data to DB
 					var obj = {
 						description: message.replace(/%20/g, ' ').replace(/%0A/g, ' '),
-						term: phone,
+						term: phone
 					};
 					``;
 					Store.findOneAndUpdate(
 						{
-							name: shop,
+							name: shop
 						},
 						{
 							$push: {
-								sms: obj,
-							},
+								sms: obj
+							}
 						},
 						{
 							new: true,
-							useFindAndModify: false,
+							useFindAndModify: false
 						},
 						(err, data) => {
 							if (!err) {
@@ -1412,7 +1412,7 @@ app.get('/api/option', async (req, res) => {
 	if (req.session.shop) {
 		try {
 			const result = await Store.findOne({
-				name: req.session.shop,
+				name: req.session.shop
 			});
 			console.log('data found');
 
@@ -1435,7 +1435,7 @@ app.get('/api/abandanTemplate', async (req, res) => {
 	if (req.session.shop) {
 		try {
 			const data = await Store.findOne({
-				name: req.session.shop,
+				name: req.session.shop
 			});
 
 			res.send(data.abandanTemplate);
@@ -1456,7 +1456,7 @@ app.get('/api/template', async (req, res) => {
 	if (req.session.shop) {
 		try {
 			const data = await Store.findOne({
-				name: req.session.shop,
+				name: req.session.shop
 			});
 
 			res.send(data.template);
@@ -1539,7 +1539,7 @@ app.get('/api/dashboard', async (req, res) => {
 		let clickThroughCount = [0, 0, 0, 0];
 		try {
 			const currentStore = await Store.findOne({
-				name: req.session.shop,
+				name: req.session.shop
 			});
 
 			currentStore.clicked.forEach(async (element) => {
@@ -1587,7 +1587,7 @@ app.get('/api/dashboard', async (req, res) => {
 			res.send({
 				convertedFolowUpPrice,
 				convertedFolowUpCount,
-				clickThroughCount,
+				clickThroughCount
 			});
 		} catch (error) {
 			console.error(error);
@@ -1595,7 +1595,7 @@ app.get('/api/dashboard', async (req, res) => {
 			res.send({
 				convertedFolowUpCount: [9, 9, 9, 9],
 				clickThroughCount: [99, 99, 99, 99],
-				convertedFolowUpPrice: [999, 999, 999, 9],
+				convertedFolowUpPrice: [999, 999, 999, 9]
 			});
 			console.log(
 				'cant find session key form get /api/dashboard || your session timeout'
@@ -1623,17 +1623,17 @@ app.post('/api/template', function (req, res) {
 			Store.findOneAndUpdate(
 				{
 					name: req.session.shop,
-					'template.topic': topic,
+					'template.topic': topic
 				},
 				{
 					$set: {
 						'template.$.topic': topic,
-						'template.$.customer': customer,
-					},
+						'template.$.customer': customer
+					}
 				},
 				{
 					new: true,
-					useFindAndModify: false,
+					useFindAndModify: false
 				},
 				(err, result) => {
 					if (err) {
@@ -1642,23 +1642,23 @@ app.post('/api/template', function (req, res) {
 						let obj = {
 							topic: topic,
 							customer: customer,
-							admin: admin,
+							admin: admin
 						};
 						if (result === null) {
 							console.log('result === null');
 							Store.findOneAndUpdate(
 								{
-									name: req.session.shop,
+									name: req.session.shop
 								},
 								{
 									// $addToSet: { template: req.body }
 									$addToSet: {
-										template: obj,
-									},
+										template: obj
+									}
 								},
 								{
 									new: true,
-									useFindAndModify: false,
+									useFindAndModify: false
 								},
 								(err, data) => {
 									console.log('delte form db');
@@ -1682,18 +1682,18 @@ app.post('/api/template', function (req, res) {
 			Store.findOneAndUpdate(
 				{
 					name: req.session.shop,
-					'template.topic': topic,
+					'template.topic': topic
 				},
 				{
 					$set: {
 						'template.$.topic': topic,
 						// "template.$.customer": customer,
-						'template.$.admin': admin,
-					},
+						'template.$.admin': admin
+					}
 				},
 				{
 					new: true,
-					useFindAndModify: false,
+					useFindAndModify: false
 				},
 				(err, result) => {
 					if (err) {
@@ -1702,22 +1702,22 @@ app.post('/api/template', function (req, res) {
 						let obj = {
 							topic: topic,
 							customer: customer,
-							admin: admin,
+							admin: admin
 						};
 						if (result === null) {
 							Store.findOneAndUpdate(
 								{
-									name: req.session.shop,
+									name: req.session.shop
 								},
 								{
 									// $addToSet: { template: req.body }
 									$addToSet: {
-										template: obj,
-									},
+										template: obj
+									}
 								},
 								{
 									new: true,
-									useFindAndModify: false,
+									useFindAndModify: false
 								},
 								(err, data) => {
 									console.log('delte form db');
@@ -1745,19 +1745,19 @@ app.post('/api/abandanTemplate', function (req, res) {
 		Store.findOneAndUpdate(
 			{
 				name: req.session.shop,
-				'abandanTemplate.topic': req.body.topic,
+				'abandanTemplate.topic': req.body.topic
 			},
 			{
 				$set: {
 					'abandanTemplate.$.topic': req.body.topic,
 					'abandanTemplate.$.template': req.body.template,
 					'abandanTemplate.$.time': req.body.time,
-					'abandanTemplate.$.status': req.body.status,
-				},
+					'abandanTemplate.$.status': req.body.status
+				}
 			},
 			{
 				new: true,
-				useFindAndModify: false,
+				useFindAndModify: false
 			},
 			(err, result) => {
 				console.log(result, 'result');
@@ -1768,16 +1768,16 @@ app.post('/api/abandanTemplate', function (req, res) {
 						console.log('result ==null');
 						Store.findOneAndUpdate(
 							{
-								name: req.session.shop,
+								name: req.session.shop
 							},
 							{
 								$addToSet: {
-									abandanTemplate: req.body,
-								},
+									abandanTemplate: req.body
+								}
 							},
 							{
 								new: true,
-								useFindAndModify: false,
+								useFindAndModify: false
 							},
 							(err, data) => {
 								if (!err) {
@@ -1842,7 +1842,7 @@ cron.schedule('*/2 * * * * ', async () => {
 	var storeName = [];
 	try {
 		const stores = await Store.find({
-			uninstalled: false,
+			uninstalled: false
 
 			// smsCount: {
 			// 	$gt: 0
@@ -1879,7 +1879,7 @@ cron.schedule('*/2 * * * * ', async () => {
 								price: order.price,
 								vendor: order.vendor,
 								name: order.name,
-								shop: store,
+								shop: store
 							};
 							const short = async () => {
 								let res = '';
@@ -1900,7 +1900,7 @@ cron.schedule('*/2 * * * * ', async () => {
 								phone: order.phone,
 								vendor: order.vendor,
 								name: order.name,
-								shop: store,
+								shop: store
 							};
 							const short = async () => {
 								let res = '';
@@ -1921,7 +1921,7 @@ cron.schedule('*/2 * * * * ', async () => {
 								phone: order.phone,
 								vendor: order.vendor,
 								name: order.name,
-								shop: store,
+								shop: store
 							};
 							const short = async () => {
 								let res = '';
@@ -1942,7 +1942,7 @@ cron.schedule('*/2 * * * * ', async () => {
 								price: order.price,
 								vendor: order.vendor,
 								name: order.name,
-								shop: store,
+								shop: store
 							};
 							const short = async () => {
 								let res = '';
