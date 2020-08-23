@@ -46,7 +46,11 @@ app.use(
 		saveUninitialized: false,
 		store: new mongoConnect({
 			mongooseConnection: mongoose.connection
-		})
+		}),
+		cookie : {
+			secure: true,
+  		  sameSite: 'none',
+		  }
 	})
 );
 app.use(function(req, res, next) {
